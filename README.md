@@ -113,3 +113,154 @@ const App = ({ logFn = log } = {}) => logFn({ message: 'Starting App...' })
 
 module.exports = App
 ```
+
+## Including webserver
+
+Now we have ESM and tests configured, you should be on this [state](https://github.com/renie/functional-series/tree/b67cb704920c622b8a625e6502c1d95637814585), we can try to make some interesting stuff.
+
+So now install express:
+```
+npm i -S express
+```
+
+For this purpose I would make 3 functions:
+```
+import { log } from './utils'
+
+export const getExpressInstance = expressLib => expressLib()
+
+export const setRoute = ({ expressInstance }) => {
+    expressInstance.get('/', (_, res) =>
+        res.status(200).send({ message: 'Root route called' }))
+    return expressInstance
+}
+
+export const startServer = ({ expressInstance, port = defaultPort, logFn = log }) =>
+    expressInstance.listen(port, () =>
+        logFn({ message: `\n\nServer listening at port ${port}...` }))
+```
+
+First one create an instance of Express, second will just set one route and return express instance, and third will boot up our server and warn it on console.
+
+As this function are really small, they are very easy to test:
+
+```
+import assert from 'assert'
+import chai from 'chai'
+import spies from 'chai-spies'
+
+import {
+    setRoute,
+    startServer,
+    getExpressInstance
+} from './webServer'
+
+chai.use(spies)
+const expect = chai.expect
+
+describe('Web Server', () => {
+    it('should create and instance of lib', () => {
+        const logFn = () => {}
+        const spyFn = chai.spy(logFn)
+        getExpressInstance(spyFn)
+        expect(spyFn).to.have.been.called.exactly(1)
+    })
+
+    it('should set a route to instance', () => {
+        const getFn = () => {}
+        const spyFn = chai.spy(getFn)
+        const expressInstance = {
+            get: spyFn
+        }
+
+        setRoute({ expressInstance })
+        expect(spyFn).to.have.been.called.with('/')
+    })
+
+    it('should start server on right port', () => {
+        const getFn = () => {}
+        const spyFn = chai.spy(getFn)
+        const expressInstance = {
+            listen: spyFn
+        }
+
+        startServer({ expressInstance, port: 2000 })
+        expect(spyFn).to.have.been.called.with(2000)
+    })
+})
+```
+
+Now I just have to tie everything together on App fn:
+
+```
+import express from 'express'
+
+import {
+    setRoute,
+    startServer,
+    getExpressInstance
+} from './webServer'
+
+const defaultPort = 3000
+
+module.exports = ({
+    expressLib = express,
+    getExpressInstanceFn = getExpressInstance,
+    setRouteFn = setRoute,
+    startServerFn = startServer,
+    port = defaultPort
+} = {}) => {
+    const expressInstance = getExpressInstanceFn(expressLib)
+    const routedInstance = setRouteFn({ expressInstance })
+    startServerFn({
+        expressInstance: routedInstance,
+        port
+    })
+}
+```
+So, I am importing those functions, creating an instance of export, and starting server with an already routed instance of express.
+
+Ofc, we need to change our test for this, huh:
+
+```
+import assert from 'assert'
+import chai from 'chai'
+import spies from 'chai-spies'
+
+const main = require('./main')
+
+chai.use(spies)
+const expect = chai.expect
+
+describe('Main', () => {
+    it('should return true', () => {
+        const instance = { }
+        const getExpressInstanceFn = () => instance
+        const getExpressInstanceFnSpy = chai.spy(getExpressInstanceFn)
+
+        const setRouteFn = ({ expressInstance }) => expressInstance
+        const setRouteFnSpy = chai.spy(setRouteFn)
+
+        const startServerFn = () => {}
+        const startServerFnSpy = chai.spy(startServerFn)
+
+        main({
+            expressLib: {},
+            getExpressInstanceFn: getExpressInstanceFnSpy,
+            setRouteFn: setRouteFnSpy,
+            startServerFn: startServerFnSpy,
+            port: 2000
+        })
+
+        expect(getExpressInstanceFnSpy).to.have.been.called.exactly(1)
+        expect(getExpressInstanceFnSpy).to.have.been.called.with({})
+
+        expect(setRouteFnSpy).to.have.been.called.exactly(1)
+        expect(setRouteFnSpy).to.have.been.called.with({expressInstance: instance})
+
+        expect(startServerFnSpy).to.have.been.called.exactly(1)
+        expect(startServerFnSpy).to.have.been.called.with({expressInstance: instance, port: 2000})
+
+    })
+})
+```
