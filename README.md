@@ -4,7 +4,7 @@ For some time I googled for articles about functional architetures for node js p
 about functional paradigms but not whole architeture as I was looking for. So I've decided to try my own and share, and I would be really glad to
 read interesting ideas on comments.
 
-## Beggining
+## Beginning
 So I've decided to start with starting a new project with [ESM](https://www.npmjs.com/package/esm) enabled. This will be needed for ES6 modules
 loading without bundles or babel.
 ```javascript
