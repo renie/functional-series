@@ -7,7 +7,7 @@ read interesting ideas on comments.
 ## Beggining
 So I've decided to start with starting a new project with [ESM](https://www.npmjs.com/package/esm) enabled. This will be needed for ES6 modules
 loading without bundles or babel.
-```
+```javascript
 npm init esm -y
 ```
 
@@ -15,30 +15,30 @@ This will create an `index.js` to serve as entry point and do the job of making 
 shoud start on `main.js`.
 
 This is also described on our `package.json` already. Lot lets just add a script on our `package.json`:
-```
+```javascript
 "start": "node index.js",
 ```
 
 I will want to export a function on my `main.js` so I have to call this function on `index.js` require:
-```
+```javascript
 module.exports = require("./main.js")()
 ```
 
 Because I am doing this, I should change the export of `main.js` to cjs style:
-```
+```javascript
 module.exports = App
 ```
 
 ## Testing
 Before coding, lets add some test libraries to our project:
 
-```
+```javascript
 npm i -D mocha chai chai-spies
 ```
 
 For now this is enough for testing. Lets add a new script on our package json for running tests
 
-```
+```javascript
 "test": "npx mocha ./**/*.test.js  --require esm"
 ```
 In other words: run mocha for all `test.js` files, with esm enabled
@@ -46,7 +46,7 @@ In other words: run mocha for all `test.js` files, with esm enabled
 Good!
 
 Lets write a simple test to start:
-```
+```javascript
 import assert from 'assert'
 import chai from 'chai'
 import spies from 'chai-spies'
@@ -67,7 +67,7 @@ describe('Main', () => {
 ```
 
 And now the `main.js` to be tested:
-```
+```javascript
 const App = ({ logFn = console.log }) => logFn({ message: 'Starting App...' })
 
 module.exports = App
@@ -77,12 +77,12 @@ Now when we run `npm test`, we should get a valid test for main.
 
 ## What about ESM?
 From `main.js` on we can use our ESM. Lets write a utils file with a log function, as well as its test, to check if everything is ok:
-```
+```javascript
 export const log = ({ message = 'My Message', logFn = console.log } = {}) => logFn(message)
 ```
 
 Test is simple: Importing function, test if function is called just once and with right parameter.
-```
+```javascript
 import assert from 'assert'
 import chai from 'chai'
 import spies from 'chai-spies'
@@ -106,7 +106,7 @@ describe('Utils', () => {
 ```
 
 Now it is done and tested, lets import it on `main.js`:
-```
+```javascript
 import { log } from './utils'
 
 const App = ({ logFn = log } = {}) => logFn({ message: 'Starting App...' })
@@ -119,12 +119,12 @@ module.exports = App
 Now we have ESM and tests configured, you should be on this [state](https://github.com/renie/functional-series/tree/b67cb704920c622b8a625e6502c1d95637814585), we can try to make some interesting stuff.
 
 So now install express:
-```
+```javascript
 npm i -S express
 ```
 
 For this purpose I would make 3 functions:
-```
+```javascript
 import { log } from './utils'
 
 export const getExpressInstance = expressLib => expressLib()
@@ -144,7 +144,7 @@ First one create an instance of Express, second will just set one route and retu
 
 As this function are really small, they are very easy to test:
 
-```
+```javascript
 import assert from 'assert'
 import chai from 'chai'
 import spies from 'chai-spies'
@@ -192,7 +192,7 @@ describe('Web Server', () => {
 
 Now I just have to tie everything together on App fn:
 
-```
+```javascript
 import express from 'express'
 
 import {
@@ -222,7 +222,7 @@ So, I am importing those functions, creating an instance of export, and starting
 
 Ofc, we need to change our test for this, huh:
 
-```
+```javascript
 import assert from 'assert'
 import chai from 'chai'
 import spies from 'chai-spies'
