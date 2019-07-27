@@ -1,0 +1,22 @@
+{
+  "name": "functional-series",
+  "version": "1.0.0",
+  "description": "Functional series repo.",
+  "main": "index.js",
+  "module": "main.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "npx mocha ./**/*.test.js  --require esm"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "esm": "^3.2.25"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "chai-spies": "^1.0.0",
+    "mocha": "^6.2.0"
+  }
+}
