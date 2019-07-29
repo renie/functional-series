@@ -1,11 +1,10 @@
 # Functional backend node articles
 
-For some time I googled for articles about functional architetures for node js projects, from scratch. I wont lie, I've got very good articles
-about functional paradigms but not whole architeture as I was looking for. So I've decided to try my own and share, and I would be really glad to
-read interesting ideas on comments.
+For some time I have beem googling for articles about functional architectures for nodejs projects, from scratch. I wont lie, I've got very good articles
+about functional paradigms but not whole architecture as I was looking for. So I've decided to try my own and share, and I would be really glad to get feedback in comments.
 
 ## Beggining
-So I've decided to start with starting a new project with [ESM](https://www.npmjs.com/package/esm) enabled. This will be needed for ES6 modules
+So I've decided to start with a new project with [ESM](https://www.npmjs.com/package/esm) enabled. This will be needed for ES6 modules
 loading without bundles or babel.
 ```
 npm init esm -y
@@ -14,23 +13,23 @@ npm init esm -y
 This will create an `index.js` to serve as entry point and do the job of making 'import' and 'export' work in the rest of our code. So our app
 shoud start on `main.js`.
 
-This is also described on our `package.json` already. Lot lets just add a script on our `package.json`:
+This is also described on our `package.json` already. So let's just add a script on our `package.json`:
 ```
 "start": "node index.js",
 ```
 
-I will want to export a function on my `main.js` so I have to call this function on `index.js` require:
+I will have to export a function on my `main.js` so I have to call this function on `index.js` require:
 ```
 module.exports = require("./main.js")()
 ```
 
-Because I am doing this, I should change the export of `main.js` to cjs style:
+Because I am doing this, I have to change the export of `main.js` to cjs style:
 ```
 module.exports = App
 ```
 
 ## Testing
-Before coding, lets add some test libraries to our project:
+Before coding, let's add some test libraries to our project:
 
 ```
 npm i -D mocha chai chai-spies
@@ -45,7 +44,7 @@ In other words: run mocha for all `test.js` files, with esm enabled
 
 Good!
 
-Lets write a simple test to start:
+Let's write a simple test to start:
 ```
 import assert from 'assert'
 import chai from 'chai'
@@ -76,7 +75,7 @@ module.exports = App
 Now when we run `npm test`, we should get a valid test for main.
 
 ## What about ESM?
-From `main.js` on we can use our ESM. Lets write a utils file with a log function, as well as its test, to check if everything is ok:
+From `main.js` on we can use our ESM. Let's write a utils file with a log function, as well as its test, to check if everything is ok:
 ```
 export const log = ({ message = 'My Message', logFn = console.log } = {}) => logFn(message)
 ```
@@ -105,7 +104,7 @@ describe('Utils', () => {
 })
 ```
 
-Now it is done and tested, lets import it on `main.js`:
+Now it is done and tested, let's import it on `main.js`:
 ```
 import { log } from './utils'
 
@@ -140,9 +139,9 @@ export const startServer = ({ expressInstance, port = defaultPort, logFn = log }
         logFn({ message: `\n\nServer listening at port ${port}...` }))
 ```
 
-First one create an instance of Express, second will just set one route and return express instance, and third will boot up our server and warn it on console.
+First one creates an instance of Express, second will just set one route and return express instance, and third will boot up our server and warn it on console.
 
-As this function are really small, they are very easy to test:
+As these functions are really small, they are very easy to test:
 
 ```
 import assert from 'assert'
