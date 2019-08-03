@@ -264,3 +264,10 @@ describe('Main', () => {
     })
 })
 ```
+
+## Making routes more scalable
+
+Now we have a server responding, lets make that `setRoute` a bit more 'real life'.
+
+But before continuing, I will, in my repository, put everything we did so far, but the index file, on a src folder. And separate test files as well. Just to keep organization.
+

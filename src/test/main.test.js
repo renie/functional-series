@@ -1,8 +1,7 @@
-import assert from 'assert'
 import chai from 'chai'
 import spies from 'chai-spies'
 
-const main = require('./main')
+const main = require('../main')
 
 chai.use(spies)
 const expect = chai.expect

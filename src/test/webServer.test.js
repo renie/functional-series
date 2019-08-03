@@ -1,4 +1,3 @@
-import assert from 'assert'
 import chai from 'chai'
 import spies from 'chai-spies'
 
@@ -6,7 +5,7 @@ import {
     setRoute,
     startServer,
     getExpressInstance
-} from './webServer'
+} from '../webServer'
 
 chai.use(spies)
 const expect = chai.expect

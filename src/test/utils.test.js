@@ -1,8 +1,7 @@
-import assert from 'assert'
 import chai from 'chai'
 import spies from 'chai-spies'
 
-import { log } from './utils'
+import { log } from '../utils'
 
 chai.use(spies)
 const expect = chai.expect
