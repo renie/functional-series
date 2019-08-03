@@ -7,8 +7,8 @@ chai.use(spies)
 const expect = chai.expect
 
 describe('Main', () => {
-    it('should return true', () => {
-        const instance = { }
+    it('should call fns', () => {
+        const instance = { get: ()=>{} }
         const getExpressInstanceFn = () => instance
         const getExpressInstanceFnSpy = chai.spy(getExpressInstanceFn)
 
@@ -21,7 +21,7 @@ describe('Main', () => {
         main({
             expressLib: {},
             getExpressInstanceFn: getExpressInstanceFnSpy,
-            setRouteFn: setRouteFnSpy,
+            setAllRoutesFn: setRouteFnSpy,
             startServerFn: startServerFnSpy,
             port: 2000
         })

@@ -271,3 +271,101 @@ Now we have a server responding, lets make that `setRoute` a bit more 'real life
 
 But before continuing, I will, in my repository, put everything we did so far, but the index file, on a src folder. And separate test files as well. Just to keep organization.
 
+So first I will need a function that receives an instance of espress, a route object, and a function for errors. This route object will be something like this
+
+```json
+{
+    "method": "post",
+    "url": "/essay",
+    "fn": () => {}
+}
+```
+
+Then the function can be as simple as this
+
+```javascript
+export const setRoute = ({
+    route = {},
+    expressInstance = {},
+    genericErrorFn = () => {}
+} = {}) => {
+    expressInstance[route.method](route.url, route.fn, route.errorFn || genericErrorFn)
+    return expressInstance
+}
+```
+
+To understand for easily, think about this as:
+```javascript
+app.get('/myroute', functionToReceive, functionForErrors)
+```
+
+And we will need a function for an array of routes, like this:
+
+```javascript
+export const setAllRoutes = (
+    expressInstance = {},
+    routes = [],
+    setRouteFn = setRoute
+} = {}) => {
+    routes.forEach(route => setRouteFn({route, expressInstance}))
+    return expressInstance
+}
+```
+
+Very simple functions, lets test them:
+```javascript
+describe('Main Router', () => {
+    it('Should call function for every route', () => {
+        const fn = () => {}
+        const routes = [1,2,3,4,5]
+        const spyFn = chai.spy(fn)
+        setAllRoutes({ routes, setRouteFn: spyFn })
+
+        expect(spyFn).to.have.been.called.exactly(5)
+    })
+
+    it('Should call function for every route', () => {
+        const fn = () => {}
+        const spyFn = chai.spy(fn)
+        const instance = {
+            get: spyFn
+        }
+        const route = {
+            method: 'get'
+        }
+
+        setRoute({ route, expressInstance: instance })
+
+        expect(spyFn).to.have.been.called.exactly(1)
+    })
+})
+```
+
+Now I will make our first generic routes, like this:
+```javascript
+export const rootRoutes = [{
+    method: 'get',
+    url: '/',
+    fn: (_, res) => res.send('Index page!!')
+}]
+
+export const notFoundRoutes = [{
+    method: 'get',
+    url: '*',
+    fn: (_, res) => res.status('404').send('Page not found!')
+}]
+```
+
+Import them on main router an use as default routes:
+```javascript
+export const setAllRoutes = ({
+    expressInstance = {},
+    routes = [
+        ...rootRoutes,
+        ...notFoundRoutes
+    ],
+    setRouteFn = setRoute
+} = {})
+```
+
+And replace our old `setRoute` by this new `setAllRoutes`.
