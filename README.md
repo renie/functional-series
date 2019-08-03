@@ -369,3 +369,67 @@ export const setAllRoutes = ({
 ```
 
 And replace our old `setRoute` by this new `setAllRoutes`.
+
+## Going a bit lower
+
+As we already have a nice routing working, lets try to make an endpoint to return stuff drom my application.
+
+Lets create a Controller:
+```javascript
+import { findAll } from '../models/books'
+
+export const getAll = (_, response) => response.status(200).send(findAll())
+
+```
+and its model:
+```javascript
+export const findAll = () => [
+    {
+        'name': 'The Little Prince',
+        'country': 'France'
+    },
+    {
+        'name': 'Os Lusiadas',
+        'country': 'Portugal'
+    },
+    {
+        'name': 'Sophie`s World',
+        'country': 'Norway'
+    }
+}]
+
+```
+
+To connect it to our router we will need a books router:
+```javascript
+import { getAll } from '../controllers/books'
+export const booksRoutes = [{
+    method: 'get',
+    url: '/books',
+    fn: getAll
+}]
+
+```
+And use is on mainRouter:
+```javascript
+export const setAllRoutes = ({
+    expressInstance = {},
+    routes = [
+        ...rootRoutes,
+        ...booksRoutes,
+        ...notFoundRoutes
+    ],
+    setRouteFn = setRoute
+} = {})
+```
+
+That is it, we have a new endpoint!
+
+## An important notes
+
+### Inversion of control and testability
+I believe I had noticed one thing: some of those functions have lots of parameters, this is important for us to be able to test.
+
+Everything is testable.
+
+If any other functions are called inside a function, they must be received as a parameter.

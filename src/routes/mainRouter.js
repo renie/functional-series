@@ -3,6 +3,8 @@ import {
     notFoundRoutes
 } from './genericRoutes'
 
+import { booksRoutes } from './booksRoutes'
+
 export const setRoute = ({
     route = {},
     expressInstance = {},
@@ -16,6 +18,7 @@ export const setAllRoutes = ({
     expressInstance = {},
     routes = [
         ...rootRoutes,
+        ...booksRoutes,
         ...notFoundRoutes
     ],
     setRouteFn = setRoute
