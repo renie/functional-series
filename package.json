@@ -6,14 +6,16 @@
   "module": "main.js",
   "scripts": {
     "start": "node index.js",
-    "test": "npx mocha ./**/*.test.js  --require esm"
+    "test": "npx mocha ./src/**/*.test.js  --require esm",
+    "seed": "node -r esm ./seed.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "esm": "^3.2.25",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "nedb": "^1.8.0"
   },
   "devDependencies": {
     "chai": "^4.2.0",

@@ -425,6 +425,93 @@ export const setAllRoutes = ({
 
 That is it, we have a new endpoint!
 
+## Adding a database
+Lets add a database to this project?
+
+I like to use nedb for these samples because it is embedded, js, npm, mongodb bla, bla. So lets install it:
+```javascript
+npm i -s nedb
+```
+
+Then I like to make a connection file like this:
+```javascript
+import Datastore from 'nedb'
+
+export const getLoadedDatabase = (name, databaseLoadFn = Datastore) => (new databaseLoadFn({filename: name, autoload: true}))
+
+export const getBooksDatabase = (getDatabaseFn = getLoadedDatabase) => getDatabaseFn('db/books.db')
+```
+
+So we have a generic function for loading different collections with autoload on. And another one that receives the first function and call it with the path of the choosen file.
+
+I like to make a seed file for this entity, so we can have a working database for every 'get' operation we might want.
+
+```javascript
+import fs from 'fs'
+import { getBooksDatabase } from './src/db/connector'
+const dir = './db'
+
+if (!fs.existsSync(dir))
+    fs.mkdirSync(dir)
+
+const books = [
+    {
+        'name': 'The Little Prince',
+        'country': 'France'
+    },
+    {
+        'name': 'Os Lusiadas',
+        'country': 'Portugal'
+    },
+    {
+        'name': 'Sophie`s World',
+        'country': 'Norway'
+    }
+]
+
+const db = getBooksDatabase()
+
+books.forEach(book => db.insert(book, (err, doc) =>{
+    if (err) {
+        console.log(err)
+        return 1
+    }
+
+    console.log(`Book ${book.name} included under id ${doc._id}.`)
+    return 0
+}))
+```
+
+You can add it to your script on package.json
+```javascript
+'seed': 'node -r esm ./seed.js'
+```
+Don`t forget esm!
+
+So, after running it...
+```javascript
+npm run seed
+```
+
+Lets change our model, it now needs to return a promise wrapping nedb function, because unfortunetly it does not support promises:
+
+```javascript
+export const findAll = (getBooksDatabaseFn = getBooksDatabase) =>
+    new Promise((resolve, reject) =>
+        getBooksDatabaseFn()
+            .find({}, (err, doc) =>
+                err ? reject(err) : resolve(doc)))
+```
+If the find function runs with error, the promise will be rejected. Otherwise, it resolves with docs found.
+
+Now just a small adjust on controller:
+```javascript
+export const getAll = (_, response) =>
+    findAll().then(books => response.status(200).send(books))
+```
+
+That is it, we have now an endpoint returning stuff from database. Let`s test those functions?
+
 ## An important notes
 
 ### Inversion of control and testability
